@@ -13,6 +13,9 @@ const stopwatchDisplay = document.getElementById("stopwatch");
 const resetBtn = document.getElementById("reset");
 resetBtn.addEventListener("click", resetTimer);
 
+const fullscreenBtn = document.getElementById("fullscreen-toggle");
+const fullscreenIcon = document.getElementById("fullscreen-icon");
+
 let isWriting = false;
 let faceForward = false;
 let isPhonePose = false;
@@ -114,7 +117,7 @@ function checkFaceForward(landmarks) {
   return Math.abs(angle) < 0.03;
 }
 
-// Smart phone detection
+// Phone posture detection
 function detectPhonePose(poseLandmarks) {
   const nose = poseLandmarks[0];
   const leftWrist = poseLandmarks[15];
@@ -138,24 +141,23 @@ function detectPhonePose(poseLandmarks) {
   return wristNearNose || wristHidden;
 }
 
-// Evaluate final status
+// Final logic with background color
 function evaluateStatus() {
   if (isPhonePose) {
     statusText.textContent = "Phone posture — paused";
-    document.body.style.backgroundColor = "#2b0000";
+    document.body.style.backgroundColor = "#8B0000"; // dark red
     pauseTimer();
   } else if (isWriting && faceForward) {
     statusText.textContent = "Focused — Studying";
-    document.body.style.backgroundColor = "#000000";
+    document.body.style.backgroundColor = "#000000"; // black
     startTimer();
   } else {
     statusText.textContent = "Not focused — paused";
-    document.body.style.backgroundColor = "#2b0000";
+    document.body.style.backgroundColor = "#8B0000"; // dark red
     pauseTimer();
   }
 }
 
-// Main setup
 window.onload = async () => {
   await requestWakeLock();
   loadStoredTime();
@@ -215,12 +217,15 @@ window.onload = async () => {
   camera.start();
 };
 
-// Dim toggle
-const dimBtn = document.getElementById("dimBtn");
-let isDimmed = false;
+// Fullscreen toggle with icon
+fullscreenBtn.addEventListener("click", () => {
+  document.body.classList.toggle("fullscreen");
 
-dimBtn.addEventListener("click", () => {
-  isDimmed = !isDimmed;
-  document.body.classList.toggle("dimmed", isDimmed);
-  dimBtn.textContent = isDimmed ? "Disable Dim Mode" : "Enable Dim Mode";
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+    fullscreenIcon.textContent = "⛶"; // enter fullscreen
+  } else {
+    document.documentElement.requestFullscreen();
+    fullscreenIcon.textContent = "❌"; // exit fullscreen
+  }
 });
