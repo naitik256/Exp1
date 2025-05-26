@@ -138,23 +138,24 @@ function detectPhonePose(poseLandmarks) {
   return wristNearNose || wristHidden;
 }
 
-// ✅ Set status + background
+// Evaluate final status
 function evaluateStatus() {
   if (isPhonePose) {
     statusText.textContent = "Phone posture — paused";
-    document.body.style.backgroundColor = "#2b0000"; // red when distracted
+    document.body.style.backgroundColor = "#2b0000";
     pauseTimer();
   } else if (isWriting && faceForward) {
     statusText.textContent = "Focused — Studying";
-    document.body.style.backgroundColor = "#000000"; // black when studying
+    document.body.style.backgroundColor = "#000000";
     startTimer();
   } else {
     statusText.textContent = "Not focused — paused";
-    document.body.style.backgroundColor = "#2b0000"; // red background
+    document.body.style.backgroundColor = "#2b0000";
     pauseTimer();
   }
 }
 
+// Main setup
 window.onload = async () => {
   await requestWakeLock();
   loadStoredTime();
@@ -213,3 +214,13 @@ window.onload = async () => {
 
   camera.start();
 };
+
+// Dim toggle
+const dimBtn = document.getElementById("dimBtn");
+let isDimmed = false;
+
+dimBtn.addEventListener("click", () => {
+  isDimmed = !isDimmed;
+  document.body.classList.toggle("dimmed", isDimmed);
+  dimBtn.textContent = isDimmed ? "Disable Dim Mode" : "Enable Dim Mode";
+});
